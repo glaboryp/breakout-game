@@ -1,6 +1,6 @@
 <div align="center">
     <a href="">
-    <img src="./public/logo.png" /> 
+    <img src="./assets/logo.png" /> 
     </a>
   <h3>
     <strong>Clon del juego Breakout de Atari</strong>
