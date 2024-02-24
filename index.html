@@ -74,8 +74,7 @@
 
   <canvas id="canvas"></canvas>
 
-  <img hidden id="sprite" src="./assets/sprite.png" alt="Sprite Arkanoid" />
-  <img hidden id="ladrillos" src="./assets/sprites.png" alt="Sprite Breakout Atari" />
+  <img hidden id="sprite" src="./assets/sprite.png" alt="Sprite Breakout Atari" />
 
   <dialog id="dialog" class="dialogAyuda">
     <button aria-label="close" onclick="cerrarAyuda()">X</button>
@@ -88,7 +87,6 @@
     const ctx = canvas.getContext('2d')
 
     const $sprite = document.querySelector('#sprite')
-    const $ladrillos = document.querySelector('#ladrillos')
 
     canvas.width = 710
     canvas.height = 590
@@ -101,7 +99,7 @@
     const radioPelota = 3;
     // posicion de la pelota
     let x = canvas.width / 2
-    let y = canvas.height - 30
+    let y = canvas.height - 60
     // velocidad de la pelota
     let dx = -3
     let dy = -3
@@ -109,8 +107,8 @@
     /* VARIABLES DE LA RAQUETA */
     const SENSIBILIDIDAD_RAQUETA = 8
 
-    const alturaRaqueta = 10;
-    const anchoRaqueta = 50; // 50
+    const alturaRaqueta = 31;
+    const anchoRaqueta = 91; // 91
 
     let raquetaX = (canvas.width - anchoRaqueta) / 2
     let raquetaY = canvas.height - alturaRaqueta - 10
@@ -191,8 +189,8 @@
     function drawraqueta() {
       ctx.drawImage(
         $sprite, // imagen
-        29, // clipX: coordenadas de recorte
-        174, // clipY: coordenadas de recorte
+        58, // clipX: coordenadas de recorte
+        302, // clipY: coordenadas de recorte
         anchoRaqueta, // el tamaño del recorte
         alturaRaqueta, // tamaño del recorte
         raquetaX, // posición X del dibujo
@@ -211,7 +209,7 @@
           const clipX = 324 + currentBrick.color * 54
 
           ctx.drawImage(
-            $ladrillos,
+            $sprite,
             clipX,
             22,
             anchoLadrillo, // 31
