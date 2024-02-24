@@ -7,7 +7,7 @@
   </h3>
   <h4>
     Basado en el proyecto de
-    <a href="https://youtu.be/b6du6MvQmuQ?si=bQ0V93E6oN1TLMdp">midudev</a>
+    <a href="https://youtu.be/b6du6MvQmuQ?si=bQ0V93E6oN1TLMdp" target="_blank">midudev</a>
   </h4>
 </div>
 
