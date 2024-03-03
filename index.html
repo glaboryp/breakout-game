@@ -35,6 +35,7 @@
 
       .paginaIncio{
         position: absolute;
+        padding-top: 70px;
       }
 
       .botones{
@@ -65,32 +66,34 @@
         left: 5px;
       }
 
-      .oculto {
-        display: none;
+      .dialogAyuda{
+        background-color: #f0f0f0;
+        color: #3b110f;
+        max-width: 40%;
+        border: solid #3b110f 3px;
+        border-radius: 10px;
       }
 
-      .dialogAyuda{
-        border-radius: 10px;
-        padding: 30px;
-        background-color: #f0f0f0;
-        font-family: sans-serif;
+      .ayuda{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      p{
         font-size: 20px;
         font-weight: bold;
-        max-width: 300px;
+        margin-bottom: 40px;
       }
 
-      .imagenes{
-        margin-top: 70px;
-        justify-items: center;
-        text-align: center;
+      .oculto {
+        display: none;
       }
     </style>
   </head>
   <body>
     <div class="paginaIncio">
-      <div class="imagenes">
-        <img id="logo" src="./assets/logo.png" alt="Logo Breakout" />
-      </div>
+      <img id="logo" src="./assets/logo.png" alt="Logo Breakout" />
       <div class="botones">
         <button class="boton" id="botonJugar" onclick="empezar()">Jugar</button>
         <button class="boton" id="botonAyuda" onclick="ayuda()">Ayuda</button>
@@ -101,10 +104,12 @@
 
     <img hidden id="sprite" src="./assets/sprite.png" alt="Sprite Breakout Atari" />
 
-    <dialog id="dialog" class="dialogAyuda">
-      <button aria-label="close" onclick="cerrarAyuda()">X</button>
-      <h2>Cómo jugar</h2>
-      <p>Utilice las flechas del teclado para moverse a izquierda y derecha</p>
+    <dialog open id="dialog" class="dialogAyuda">
+      <div class="ayuda">
+        <h1>Cómo jugar</h1>
+        <p>Utilice las flechas del teclado para moverse a izquierda y derecha</p>
+        <button class="boton" aria-label="Aceptar" onclick="cerrarAyuda()">Aceptar</button>
+      </div>
     </dialog>
 
     <script>
