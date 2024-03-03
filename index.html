@@ -76,7 +76,7 @@
       .dialog{
         background-color: #f0f0f0;
         color: #3b110f;
-        max-width: 40%;
+        width: 400px;
         border: solid #3b110f 3px;
         border-radius: 10px;
       }
@@ -85,12 +85,27 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        gap: 30px;
+      }
+
+      .numero{
+        display: inline-flex;
+        width: 18px;
+      }
+
+      .ajustes{
+        display: flex;
+        gap: 5px;
+        align-items: center;
+      }
+
+      h1{
+        margin: 0;
       }
 
       p{
         font-size: 20px;
         font-weight: bold;
-        margin-bottom: 40px;
       }
 
       .oculto {
@@ -144,7 +159,14 @@
     <dialog id="dialogAjustes" class="dialog">
       <div class="divDialog">
         <h1>Ajustes</h1>
-        <span>Velocidad de la pelota</span>
+        <div class="ajustes">
+          Velocidad de la raqueta: <span id="rangeVelocidad" class="numero">10</span>
+          <input id="velocidadRaqueta" type="range" min="1" max="50" value="10" oninput="rangeVelocidad.innerText = this.value">
+        </div>
+        <div class="ajustes">
+          Tamaño de la pelota: <span id="rangeRadio" class="numero">3</span>
+          <input id="radioPelota" type="range" min="1" max="10" value="3" oninput="rangeRadio.innerText = this.value">
+        </div>
         <button class="boton" aria-label="Aceptar" onclick="cerrarAjustes()">Aceptar</button>
       </div>
     </dialog>
@@ -177,14 +199,13 @@
 
       canvas.width = 710
       canvas.height = window.innerHeight - 30 //590
-      console.log(window.innerHeight)
 
       /* Variables de nuestro juego */
       let vidas = 3
       let nivelElegido = 1
 
       /* VARIABLES DE LA PELOTA */
-      const radioPelota = 3;
+      let radioPelota = 3;
       // posicion de la pelota
       let x = canvas.width / 2
       let y = canvas.height - 70
@@ -193,7 +214,7 @@
       let dy = -3
 
       /* VARIABLES DE LA RAQUETA */
-      const SENSIBILIDIDAD_RAQUETA = 10
+      let velocidad_raqueta = 10
 
       const alturaRaqueta = 31;
       const anchoRaqueta = 91;
@@ -222,7 +243,7 @@
       function drawBall() {
         ctx.beginPath() // iniciar el trazado
         ctx.arc(x, y, radioPelota, 0, Math.PI * 2)
-        ctx.fillStyle = '#fff'
+        ctx.fillStyle = '#3b110f'
         ctx.fill()
         ctx.closePath() // terminar el trazado
       }
@@ -351,9 +372,9 @@
 
       function raquetaMovement() {
         if (derechoPresionado && raquetaX < canvas.width - anchoRaqueta) {
-          raquetaX += SENSIBILIDIDAD_RAQUETA
+          raquetaX += velocidad_raqueta
         } else if (izquierdoPresionado && raquetaX > 0) {
-          raquetaX -= SENSIBILIDIDAD_RAQUETA
+          raquetaX -= velocidad_raqueta
         }
       }
 
@@ -430,6 +451,8 @@
       function empezar() {
         document.getElementById("paginaInicio").classList.toggle("oculto");
         nivelElegido = document.getElementsByClassName("active")[0].id
+        radioPelota = document.getElementById("radioPelota").valueAsNumber
+        velocidad_raqueta = document.getElementById("velocidadRaqueta").valueAsNumber
 
         for (let c = 0; c < columnasLadrillos; c++) {
           ladrillos[c] = [] // inicializamos con un array vacio
