@@ -20,7 +20,7 @@
     <style>
       body {
         background-color: #f0f0f0;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-family: system-ui, -apple-system,"Helvetica Neue", Helvetica, Arial, sans-serif;
         display: flex;
         place-content: center;
       }
@@ -30,19 +30,43 @@
         border-bottom: transparent;
         background: url('./assets/bkg.png') repeat;
         margin: 0 auto;
-        display: block;
         box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.4);
+      }
+
+      .paginaIncio{
+        position: absolute;
+      }
+
+      .botones{
+        position: relative;
+        justify-items: center;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 2em;
+        margin-top: 40px;
+      }
+
+      .boton {
+        font-size: x-large;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: #3b110f;
+        cursor: pointer;
+        border: 3px solid;
+        padding: 0.5em 0.5em;
+        box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px, 3px 3px 0px 0px, 4px 4px 0px 0px, 5px 5px 0px 0px;
+        position: relative;
+      }
+
+      .boton:hover, .boton:active {
+        box-shadow: 0px 0px 0px 0px;
+        top: 5px;
+        left: 5px;
       }
 
       .oculto {
         display: none;
-      }
-
-      .boton{
-        margin-top: 50px;
-        padding: 20px;
-        width: 50%;
-        font-size: x-large;
       }
 
       .dialogAyuda{
@@ -55,22 +79,10 @@
         max-width: 300px;
       }
 
-      .paginaIncio{
-        position: absolute;
-        margin: 0 auto;
-        display: block;
-      }
-
       .imagenes{
         margin-top: 70px;
         justify-items: center;
         text-align: center;
-      }
-
-      .botones{
-        justify-items: center;
-        text-align: center;
-        display: grid;
       }
     </style>
   </head>
