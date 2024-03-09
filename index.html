@@ -52,7 +52,9 @@
         border: 3px solid;
         padding: 0.5em 0.5em;
         box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px, 3px 3px 0px 0px, 4px 4px 0px 0px, 5px 5px 0px 0px;
-        position: relative;
+        transition-duration: .5s;
+        transition-timing-function: ease-out;
+        transition-property: box-shadow;
       }
 
       .boton:hover, .boton:active {
@@ -61,7 +63,7 @@
         left: 5px;
       }
 
-      .botonAcion {
+      .botonAccion {
         width: 80%;
       }
 
@@ -132,6 +134,15 @@
         height: 35px;
       }
 
+      @media (min-height: 700px) {
+        .paginaInicio{
+          gap: 3em;
+        }
+        #logo {
+          width: 600px;
+        }
+      }
+
       @media (min-height: 500px) and (max-height: 560px) {
         .paginaInicio{
           gap: 1.7em;
@@ -159,9 +170,9 @@
         <button class="boton" id="2">Nivel 2</button>
         <button class="boton" id="3">Nivel 3</button>
       </div>
-      <button class="boton botonAcion id="botonJugar" onclick="empezar()">Jugar</button>
-      <button class="boton botonAcion" id="botonAyuda" onclick="ajustes()">Ajustes</button>
-      <button class="boton botonAcion" id="botonAyuda" onclick="ayuda()">Ayuda</button>
+      <button class="boton botonAccion id="botonJugar" onclick="empezar()">Jugar</button>
+      <button class="boton botonAccion" id="botonAyuda" onclick="ajustes()">Ajustes</button>
+      <button class="boton botonAccion" id="botonAyuda" onclick="ayuda()">Ayuda</button>
     </div>
 
     <div class="iconContainer">
