@@ -1,5 +1,5 @@
 <div align="center">
-    <a href="">
+    <a href="https://breakout-game-one.vercel.app/" target="_blank">
     <img src="./assets/logo.png" /> 
     </a>
   <h3>
