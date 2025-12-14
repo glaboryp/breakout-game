@@ -19,6 +19,16 @@ let y = canvas.height - 70
 let dx = -3
 let dy = -3
 
+const PALETTE = {
+  cyan: '#00FFFF',
+  magenta: '#FF00FF',
+  yellow: '#FFFF00',
+  violet: '#9D00FF',
+  green: '#00FF00',
+  red: '#FF0000',
+  white: '#FFFFFF'
+}
+
 /* VARIABLES DE LA RAQUETA */
 let velocidadRaqueta = 10
 
@@ -93,83 +103,83 @@ botonJugar.addEventListener('click', () => {
   initEvents()
 })
 
-function drawBall () {
+function drawBall() {
   ctx.beginPath() // iniciar el trazado
   ctx.arc(x, y, radioPelota, 0, Math.PI * 2)
-  ctx.fillStyle = '#3b110f'
+  ctx.fillStyle = PALETTE.white
   ctx.fill()
   ctx.closePath() // terminar el trazado
 }
 
-function drawraqueta () {
-  ctx.drawImage(
-    $sprite, // imagen
-    58, // clipX: coordenadas de recorte
-    302, // clipY: coordenadas de recorte
-    anchoRaqueta, // el tamaño del recorte
-    alturaRaqueta, // tamaño del recorte
-    raquetaX, // posición X del dibujo
-    raquetaY, // posición Y del dibujo
-    anchoRaqueta, // ancho del dibujo
-    alturaRaqueta // alto del dibujo
-  )
+function drawraqueta() {
+  ctx.fillStyle = PALETTE.cyan
+  ctx.fillRect(raquetaX, raquetaY, anchoRaqueta, alturaRaqueta)
+
+  // Neon glow effect (simplified)
+  ctx.shadowBlur = 10
+  ctx.shadowColor = PALETTE.cyan
+  ctx.fillRect(raquetaX, raquetaY, anchoRaqueta, alturaRaqueta)
+  ctx.shadowBlur = 0
 }
 
-function drawBricks () {
+function drawBricks() {
   for (let c = 0; c < columnasLadrillos; c++) {
     for (let r = 0; r < filasLadrillos; r++) {
       const currentBrick = ladrillos[c][r]
       if (currentBrick.status === ESTADO_LADRILLO.DESTRUIDO) continue
 
-      const clipX = 324 + currentBrick.color * 54
+      let color = PALETTE.cyan
+      switch (currentBrick.color) {
+        case 1: color = PALETTE.cyan; break; // Washer - like
+        case 2: color = PALETTE.magenta; break;
+        case 3: color = PALETTE.yellow; break;
+        case 4: color = PALETTE.violet; break;
+        case 5: color = PALETTE.green; break;
+        case 6: color = PALETTE.red; break;
+        default: color = PALETTE.cyan;
+      }
 
-      ctx.drawImage(
-        $sprite,
-        clipX,
-        22,
-        anchoLadrillo, // 31
-        altoLadrillo, // 14
+      ctx.fillStyle = color
+      ctx.shadowBlur = 5
+      ctx.shadowColor = color
+      ctx.fillRect(
         currentBrick.x,
         currentBrick.y,
-        anchoLadrillo,
-        altoLadrillo
+        anchoLadrillo - 2, // Slight gap
+        altoLadrillo - 2
       )
+      ctx.shadowBlur = 0
     }
   }
 }
 
-function drawUI () {
+function drawUI() {
   ctx.font = '10px Verdana'
+  ctx.fillStyle = PALETTE.white
   ctx.fillText(`FPS: ${framesPerSec}`, 5, 10)
 
   for (let i = 0; i < vidas; i++) {
-    ctx.drawImage(
-      $sprite, // imagen
-      87, // clipX: coordenadas de recorte
-      60, // clipY: coordenadas de recorte
-      30, // el tamaño del recorte
-      30, // tamaño del recorte
-      300 + 40 * i, // posición X del dibujo
-      5, // posición Y del dibujo
-      30, // ancho del dibujo
-      30 // alto del dibujo
-    )
+    ctx.fillStyle = PALETTE.magenta
+    ctx.beginPath()
+    ctx.arc(320 + 40 * i, 15, 10, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.closePath()
   }
 }
 
-function collisionDetection () {
+function collisionDetection() {
   for (let c = 0; c < columnasLadrillos; c++) {
     for (let r = 0; r < filasLadrillos; r++) {
       const currentBrick = ladrillos[c][r]
       if (currentBrick.status === ESTADO_LADRILLO.DESTRUIDO) continue
 
       const isBallSameXAsBrick =
-              x > currentBrick.x &&
-              x < currentBrick.x + anchoLadrillo
+        x > currentBrick.x &&
+        x < currentBrick.x + anchoLadrillo
 
       const isBallSameYAsBrick =
-              y > currentBrick.y &&
-              y < currentBrick.y + altoLadrillo
+        y > currentBrick.y &&
+        y < currentBrick.y + altoLadrillo
 
       if (isBallSameXAsBrick && isBallSameYAsBrick) {
         dy = -dy
@@ -179,11 +189,11 @@ function collisionDetection () {
   }
 }
 
-function ballMovement () {
+function ballMovement() {
   // rebotar las pelotas en los laterales
   if (
     x + dx > canvas.width - radioPelota || // la pared derecha
-          x + dx < radioPelota // la pared izquierda
+    x + dx < radioPelota // la pared izquierda
   ) {
     dx = -dx
   }
@@ -195,11 +205,11 @@ function ballMovement () {
 
   // la pelota toca la pala
   const isBallSameXAsraqueta =
-          x > raquetaX &&
-          x < raquetaX + anchoRaqueta
+    x > raquetaX &&
+    x < raquetaX + anchoRaqueta
 
   const isBallTouchingraqueta =
-          y + dy > raquetaY
+    y + dy > raquetaY
 
   if (isBallSameXAsraqueta && isBallTouchingraqueta) {
     dy = -dy // cambiamos la dirección de la pelota
@@ -223,7 +233,7 @@ function ballMovement () {
   y += dy
 }
 
-function raquetaMovement () {
+function raquetaMovement() {
   if (derechoPresionado && raquetaX < canvas.width - anchoRaqueta) {
     raquetaX += velocidadRaqueta
   } else if (izquierdoPresionado && raquetaX > 0) {
@@ -231,15 +241,15 @@ function raquetaMovement () {
   }
 }
 
-function cleanCanvas () {
+function cleanCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 }
 
-function initEvents () {
+function initEvents() {
   document.addEventListener('keydown', keyDownHandler)
   document.addEventListener('keyup', keyUpHandler)
 
-  function keyDownHandler (event) {
+  function keyDownHandler(event) {
     const { key } = event
     if (key === 'Right' || key === 'ArrowRight' || key.toLowerCase() === 'd') {
       derechoPresionado = true
@@ -248,7 +258,7 @@ function initEvents () {
     }
   }
 
-  function keyUpHandler (event) {
+  function keyUpHandler(event) {
     const { key } = event
     if (key === 'Right' || key === 'ArrowRight' || key.toLowerCase() === 'd') {
       derechoPresionado = false
@@ -267,7 +277,7 @@ const msPerFrame = 1000 / fps
 let frames = 0
 let framesPerSec = fps
 
-function draw () {
+function draw() {
   window.requestAnimationFrame(draw)
 
   const msNow = window.performance.now()
@@ -300,7 +310,7 @@ function draw () {
   raquetaMovement()
 }
 
-function colorLadrillo (r, c) {
+function colorLadrillo(r, c) {
   let color = 1
   switch (nivelElegido) {
     case '1':
