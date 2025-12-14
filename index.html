@@ -1,75 +1,76 @@
-
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
 
-    <title>Breakout en JavaScript</title>
-    <meta name="description" content="Clon del mítico juego de Atari Breakout">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
 
-    <!-- OPEN GRAPH -->
-		<meta property="og:title" content="Juego Breakout en JavaScript">
-		<meta property="og:description" content="Clon del mítico juego de Atari Breakout">
-		<meta property="og:image" content="/assets/logo.png">
-		<meta property="og:image:alt" content="Logo del juego Breakout">
+  <title>Breakout en JavaScript</title>
+  <meta name="description" content="Clon del mítico juego de Atari Breakout">
 
-		<meta name="robots" content="index, follow">
-		<link rel="icon" type="image/png" href="/assets/logoCuadrado.png">
-		<link rel="stylesheet" href="styles.css">
-  </head>
-  <body>
-    <div class="paginaInicio" id="paginaInicio">
-      <img id="logo" src="./assets/logo.png" alt="Logo Breakout" />
-      <div id="niveles">
-        <button class="boton active" id="1">Nivel 1</button>
-        <button class="boton" id="2">Nivel 2</button>
-        <button class="boton" id="3">Nivel 3</button>
-      </div>
-      <button class="boton botonAccion" id="botonJugar">Jugar</button>
-      <button class="boton botonAccion" id="botonAjustes">Ajustes</button>
-      <button class="boton botonAccion" id="botonAyuda">Ayuda</button>
+  <!-- OPEN GRAPH -->
+  <meta property="og:title" content="Juego Breakout en JavaScript">
+  <meta property="og:description" content="Clon del mítico juego de Atari Breakout">
+  <meta property="og:image" content="/assets/logo.webp">
+  <meta property="og:image:alt" content="Logo del juego Breakout">
+
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/png" href="/assets/icono.webp">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="paginaInicio" id="paginaInicio">
+    <img id="logo" src="./assets/logo.webp" alt="Logo Breakout" />
+    <div id="niveles">
+      <button class="boton active" id="1">Nivel 1</button>
+      <button class="boton" id="2">Nivel 2</button>
+      <button class="boton" id="3">Nivel 3</button>
     </div>
+    <button class="boton botonAccion" id="botonJugar">Jugar</button>
+    <button class="boton botonAccion" id="botonAjustes">Ajustes</button>
+    <button class="boton botonAccion" id="botonAyuda">Ayuda</button>
+  </div>
 
-    <div class="iconContainer">
-      <a class="link" href="https://github.com/glaboryp/breakout-game" target="_blank" rel="noopener noreferrer"
-      >
-        <svg class="icono" fill="#3b110f" viewBox="0 0 24 24">
-          <path
-            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
-          >
-          </path>
-        </svg>
-      </a>
+  <div class="iconContainer">
+    <a class="link" href="https://github.com/glaboryp/breakout-game" target="_blank" rel="noopener noreferrer">
+      <svg class="icono" fill="#3b110f" viewBox="0 0 24 24">
+        <path
+          d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z">
+        </path>
+      </svg>
+    </a>
+  </div>
+
+  <canvas id="canvas"></canvas>
+
+  <img hidden id="sprite" src="./assets/sprite.png" alt="Sprite Breakout Atari" />
+
+  <dialog id="dialogAyuda" class="dialog">
+    <div class="divDialog">
+      <h1>Cómo jugar</h1>
+      <p>Utilice las flechas del teclado para moverse a izquierda y derecha</p>
+      <button class="boton" aria-label="Aceptar" id="cerrarAyuda">Aceptar</button>
     </div>
+  </dialog>
 
-    <canvas id="canvas"></canvas>
-
-    <img hidden id="sprite" src="./assets/sprite.png" alt="Sprite Breakout Atari" />
-
-    <dialog id="dialogAyuda" class="dialog">
-      <div class="divDialog">
-        <h1>Cómo jugar</h1>
-        <p>Utilice las flechas del teclado para moverse a izquierda y derecha</p>
-        <button class="boton" aria-label="Aceptar" id="cerrarAyuda">Aceptar</button>
+  <dialog id="dialogAjustes" class="dialog">
+    <div class="divDialog">
+      <h1>Ajustes</h1>
+      <div class="ajustes">
+        Velocidad de la raqueta: <span id="rangeVelocidad" class="numero">10</span>
+        <input id="velocidadRaqueta" type="range" min="1" max="50" value="10"
+          oninput="rangeVelocidad.innerText = this.value">
       </div>
-    </dialog>
-
-    <dialog id="dialogAjustes" class="dialog">
-      <div class="divDialog">
-        <h1>Ajustes</h1>
-        <div class="ajustes">
-          Velocidad de la raqueta: <span id="rangeVelocidad" class="numero">10</span>
-          <input id="velocidadRaqueta" type="range" min="1" max="50" value="10" oninput="rangeVelocidad.innerText = this.value">
-        </div>
-        <div class="ajustes">
-          Tamaño de la pelota: <span id="rangeRadio" class="numero">3</span>
-          <input id="radioPelota" type="range" min="1" max="10" value="3" oninput="rangeRadio.innerText = this.value">
-        </div>
-        <button class="boton" aria-label="Aceptar" id="cerrarAjustes">Aceptar</button>
+      <div class="ajustes">
+        Tamaño de la pelota: <span id="rangeRadio" class="numero">3</span>
+        <input id="radioPelota" type="range" min="1" max="10" value="3" oninput="rangeRadio.innerText = this.value">
       </div>
-    </dialog>
+      <button class="boton" aria-label="Aceptar" id="cerrarAjustes">Aceptar</button>
+    </div>
+  </dialog>
 
-    <script src="index.js"></script>
-  </body>
+  <script src="index.js"></script>
+</body>
+
 </html>
