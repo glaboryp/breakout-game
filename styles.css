@@ -1,20 +1,33 @@
+:root {
+  --color-bg: #111;
+  --color-text: #fff;
+  --color-primary: #00ffff;
+  --color-secondary: #ff00ff;
+  --color-yellow: #ffff00;
+  --color-violet: #9d00ff;
+  --color-green: #00ff00;
+  --color-red: #ff0000;
+  --color-black: #000;
+  --font-main: system-ui, -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 body {
-  background-color: #111;
-  color: #fff;
-  font-family: system-ui, -apple-system,"Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-main);
   display: flex;
   place-content: center;
 }
 
 canvas {
-  border: 4px solid #00ffff;
+  border: 4px solid var(--color-primary);
   border-bottom: transparent;
-  background: #000;
+  background: var(--color-black);
   margin: 0 auto;
-  box-shadow: 0px 0px 20px 0px rgb(0 255 255 / 0.5);
+  box-shadow: 0px 0px 20px 0px rgb(0 255 255 / 0.5); /* Keep rgb for opacity until complex generic solution */
 }
 
-.paginaInicio{
+.paginaInicio {
   position: absolute;
   height: 90vh;
   display: flex;
@@ -29,11 +42,15 @@ canvas {
   letter-spacing: 5px;
   text-transform: uppercase;
   color: #ffffff;
-  background-color: #000;
+  background-color: var(--color-black);
   cursor: pointer;
-  border: 3px solid #00ffff;
+  border: 3px solid var(--color-primary);
   padding: 0.5em 0.5em;
-  box-shadow: 1px 1px 0px 0px #ff00ff, 2px 2px 0px 0px #ff00ff, 3px 3px 0px 0px #ff00ff, 4px 4px 0px 0px #ff00ff, 5px 5px 0px 0px #ff00ff;
+  box-shadow: 1px 1px 0px 0px var(--color-secondary),
+              2px 2px 0px 0px var(--color-secondary),
+              3px 3px 0px 0px var(--color-secondary),
+              4px 4px 0px 0px var(--color-secondary),
+              5px 5px 0px 0px var(--color-secondary);
   transition-duration: 200ms;
   transition-timing-function: ease-out;
   transition-property: box-shadow;
@@ -44,7 +61,7 @@ canvas {
   top: 5px;
   left: 5px;
   transition-duration: 500ms;
-  border-color: #ff00ff;
+  border-color: var(--color-secondary);
 }
 
 .botonAccion {
@@ -55,43 +72,43 @@ canvas {
   box-shadow: 0px 0px 0px 0px;
   top: 5px;
   left: 5px;
-  background-color: #00ffff;
-  color: #000;
-  border-color: #00ffff;
+  background-color: var(--color-primary);
+  color: var(--color-black);
+  border-color: var(--color-primary);
 }
 
-.dialog{
-  background-color: #111;
-  color: #fff;
+.dialog {
+  background-color: var(--color-bg);
+  color: var(--color-text);
   width: 400px;
-  border: solid #00ffff 3px;
+  border: solid var(--color-primary) 3px;
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
 }
 
-.divDialog{
+.divDialog {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 30px;
 }
 
-.numero{
+.numero {
   display: inline-flex;
   width: 18px;
 }
 
-.ajustes{
+.ajustes {
   display: flex;
   gap: 5px;
   align-items: center;
 }
 
-h1{
+h1 {
   margin: 0;
 }
 
-p{
+p {
   font-size: 20px;
   font-weight: bold;
 }
@@ -107,21 +124,21 @@ p{
   right: 20px;
 }
 
-.link{
+.link {
   transition: all 0.3s linear;
 }
 
-.link:hover{
+.link:hover {
   transform: scale(1.1);
 }
 
-.icono{
+.icono {
   width: 35px;
   height: 35px;
 }
 
 @media (min-height: 700px) {
-  .paginaInicio{
+  .paginaInicio {
     gap: 3em;
   }
   #logo {
@@ -130,7 +147,7 @@ p{
 }
 
 @media (min-height: 500px) and (max-height: 560px) {
-  .paginaInicio{
+  .paginaInicio {
     gap: 1.7em;
   }
   #logo {
@@ -139,7 +156,7 @@ p{
 }
 
 @media (max-height: 500px) {
-  .paginaInicio{
+  .paginaInicio {
     gap: 1.4em;
   }
   #logo {

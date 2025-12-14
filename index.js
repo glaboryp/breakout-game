@@ -3,317 +3,208 @@ const ctx = canvas.getContext('2d')
 
 const $sprite = document.querySelector('#sprite')
 
-canvas.width = 710
-canvas.height = window.innerHeight - 30 // 590
-
-/* Variables de nuestro juego */
-let vidas = 3
-let nivelElegido = 1
-
-/* VARIABLES DE LA PELOTA */
-let radioPelota = 3
-// posicion de la pelota
-let x = canvas.width / 2
-let y = canvas.height - 70
-// velocidad de la pelota
-let dx = -3
-let dy = -3
-
-const PALETTE = {
-  cyan: '#00FFFF',
-  magenta: '#FF00FF',
-  yellow: '#FFFF00',
-  violet: '#9D00FF',
-  green: '#00FF00',
-  red: '#FF0000',
-  white: '#FFFFFF'
-}
-
-/* VARIABLES DE LA RAQUETA */
-let velocidadRaqueta = 10
-
-const alturaRaqueta = 31
-const anchoRaqueta = 91
-
-let raquetaX = (canvas.width - anchoRaqueta) / 2
-let raquetaY = canvas.height - alturaRaqueta - 10
-
-let derechoPresionado = false
-let izquierdoPresionado = false
-
-/* VARIABLES DE LOS LADRILLOS */
-const filasLadrillos = 9
-const columnasLadrillos = 13
-const anchoLadrillo = 54
-const altoLadrillo = 22
-const distanciaEntreLadrillos = 0
-const distanciaLadrillosTop = 40
-const distanciaLadrillosIzq = 4
-const ladrillos = []
-
-const ESTADO_LADRILLO = {
-  ACTIVO: 1,
-  DESTRUIDO: 0
-}
-
-let botonAnterior = document.getElementsByClassName('active')[0]
-const niveles = document.getElementById('niveles')
-niveles.addEventListener('click', (e) => {
-  const esBoton = e.target.nodeName === 'BUTTON'
-
-  if (!esBoton) {
-    return
-  }
-
-  e.target.classList.add('active')
-
-  if (botonAnterior !== null && botonAnterior !== e.target) {
-    botonAnterior.classList.remove('active')
-  }
-
-  botonAnterior = e.target
-})
-
-const botonJugar = document.getElementById('botonJugar')
-botonJugar.addEventListener('click', () => {
-  document.getElementById('paginaInicio').classList.toggle('oculto')
-  nivelElegido = document.getElementsByClassName('active')[0].id
-  radioPelota = document.getElementById('radioPelota').valueAsNumber
-  velocidadRaqueta = document.getElementById('velocidadRaqueta').valueAsNumber
-
-  for (let c = 0; c < columnasLadrillos; c++) {
-    ladrillos[c] = [] // inicializamos con un array vacio
-    for (let r = 0; r < filasLadrillos; r++) {
-      // calculamos la posicion del ladrillo en la pantalla
-      const brickX = c * (anchoLadrillo + distanciaEntreLadrillos) + distanciaLadrillosIzq
-      const brickY = r * (altoLadrillo + distanciaEntreLadrillos) + distanciaLadrillosTop
-      // Asignar un color a cada ladrillo (depende del nivel en el que estemos)
-      const colorNivel = colorLadrillo(r, c)
-
-      // Guardamos la información de cada ladrillo
-      ladrillos[c][r] = {
-        x: brickX,
-        y: brickY,
-        status: ESTADO_LADRILLO.ACTIVO,
-        color: colorNivel
-      }
-    }
-  }
-  draw()
-  initEvents()
-})
-
-function drawBall() {
-  ctx.beginPath() // iniciar el trazado
-  ctx.arc(x, y, radioPelota, 0, Math.PI * 2)
-  ctx.fillStyle = PALETTE.white
-  ctx.fill()
-  ctx.closePath() // terminar el trazado
-}
-
-function drawraqueta() {
-  ctx.fillStyle = PALETTE.cyan
-  ctx.fillRect(raquetaX, raquetaY, anchoRaqueta, alturaRaqueta)
-
-  // Neon glow effect (simplified)
-  ctx.shadowBlur = 10
-  ctx.shadowColor = PALETTE.cyan
-  ctx.fillRect(raquetaX, raquetaY, anchoRaqueta, alturaRaqueta)
-  ctx.shadowBlur = 0
-}
-
-function drawBricks() {
-  for (let c = 0; c < columnasLadrillos; c++) {
-    for (let r = 0; r < filasLadrillos; r++) {
-      const currentBrick = ladrillos[c][r]
-      if (currentBrick.status === ESTADO_LADRILLO.DESTRUIDO) continue
-
-      let color = PALETTE.cyan
-      switch (currentBrick.color) {
-        case 1: color = PALETTE.cyan; break; // Washer - like
-        case 2: color = PALETTE.magenta; break;
-        case 3: color = PALETTE.yellow; break;
-        case 4: color = PALETTE.violet; break;
-        case 5: color = PALETTE.green; break;
-        case 6: color = PALETTE.red; break;
-        default: color = PALETTE.cyan;
-      }
-
-      ctx.fillStyle = color
-      ctx.shadowBlur = 5
-      ctx.shadowColor = color
-      ctx.fillRect(
-        currentBrick.x,
-        currentBrick.y,
-        anchoLadrillo - 2, // Slight gap
-        altoLadrillo - 2
-      )
-      ctx.shadowBlur = 0
-    }
+const CONSTANTS = {
+  PADDLE_WIDTH: 91,
+  PADDLE_HEIGHT: 31,
+  PADDLE_SPEED: 10,
+  BALL_RADIUS: 3,
+  BALL_SPEED: 3,
+  BRICK_ROWS: 9,
+  BRICK_COLS: 13,
+  BRICK_WIDTH: 54,
+  BRICK_HEIGHT: 22,
+  BRICK_GAP: 0,
+  BRICK_OFFSET_TOP: 40,
+  BRICK_OFFSET_LEFT: 4,
+  COLORS: {
+    CYAN: '#00FFFF',
+    MAGENTA: '#FF00FF',
+    YELLOW: '#FFFF00',
+    VIOLET: '#9D00FF',
+    GREEN: '#00FF00',
+    RED: '#FF0000',
+    WHITE: '#FFFFFF'
+  },
+  STATE: {
+    ACTIVE: 1,
+    DESTROYED: 0
   }
 }
 
-function drawUI() {
-  ctx.font = '10px Verdana'
-  ctx.fillStyle = PALETTE.white
-  ctx.fillText(`FPS: ${framesPerSec}`, 5, 10)
+class Ball {
+  constructor(x, y, radius, speed) {
+    this.x = x
+    this.y = y
+    this.radius = radius
+    this.speed = speed
+    this.dx = -speed
+    this.dy = -speed
+  }
 
-  for (let i = 0; i < vidas; i++) {
-    ctx.fillStyle = PALETTE.magenta
+  draw() {
     ctx.beginPath()
-    ctx.arc(320 + 40 * i, 15, 10, 0, Math.PI * 2)
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
+    ctx.fillStyle = CONSTANTS.COLORS.WHITE
     ctx.fill()
     ctx.closePath()
   }
+
+  move() {
+    this.x += this.dx
+    this.y += this.dy
+  }
+
+  reset(width, height) {
+    this.x = width / 2
+    this.y = height - 70
+    this.dx = -this.speed
+    this.dy = -this.speed
+  }
 }
 
-function collisionDetection() {
-  for (let c = 0; c < columnasLadrillos; c++) {
-    for (let r = 0; r < filasLadrillos; r++) {
-      const currentBrick = ladrillos[c][r]
-      if (currentBrick.status === ESTADO_LADRILLO.DESTRUIDO) continue
+class Paddle {
+  constructor(canvasWidth, canvasHeight, speed) {
+    this.width = CONSTANTS.PADDLE_WIDTH
+    this.height = CONSTANTS.PADDLE_HEIGHT
+    this.speed = speed
+    this.x = (canvasWidth - this.width) / 2
+    this.y = canvasHeight - this.height - 10
+    this.movingRight = false
+    this.movingLeft = false
+  }
 
-      const isBallSameXAsBrick =
-        x > currentBrick.x &&
-        x < currentBrick.x + anchoLadrillo
+  draw() {
+    ctx.fillStyle = CONSTANTS.COLORS.CYAN
+    ctx.fillRect(this.x, this.y, this.width, this.height)
 
-      const isBallSameYAsBrick =
-        y > currentBrick.y &&
-        y < currentBrick.y + altoLadrillo
+    // Neon glow effect (simplified)
+    ctx.shadowBlur = 10
+    ctx.shadowColor = CONSTANTS.COLORS.CYAN
+    ctx.fillRect(this.x, this.y, this.width, this.height)
+    ctx.shadowBlur = 0
+  }
 
-      if (isBallSameXAsBrick && isBallSameYAsBrick) {
-        dy = -dy
-        currentBrick.status = ESTADO_LADRILLO.DESTRUIDO
+  move(canvasWidth) {
+    if (this.movingRight && this.x < canvasWidth - this.width) {
+      this.x += this.speed
+    } else if (this.movingLeft && this.x > 0) {
+      this.x -= this.speed
+    }
+  }
+
+  reset(canvasWidth, canvasHeight) {
+    this.x = (canvasWidth - this.width) / 2
+    this.y = canvasHeight - this.height - 10
+  }
+}
+
+class Brick {
+  constructor(x, y, color) {
+    this.x = x
+    this.y = y
+    this.status = CONSTANTS.STATE.ACTIVE
+    this.color = color
+  }
+
+  draw() {
+    if (this.status === CONSTANTS.STATE.DESTROYED) return
+
+    let colorHex = CONSTANTS.COLORS.CYAN
+    switch (this.color) {
+      case 1: colorHex = CONSTANTS.COLORS.CYAN; break
+      case 2: colorHex = CONSTANTS.COLORS.MAGENTA; break
+      case 3: colorHex = CONSTANTS.COLORS.YELLOW; break
+      case 4: colorHex = CONSTANTS.COLORS.VIOLET; break
+      case 5: colorHex = CONSTANTS.COLORS.GREEN; break
+      case 6: colorHex = CONSTANTS.COLORS.RED; break
+      default: colorHex = CONSTANTS.COLORS.CYAN
+    }
+
+    ctx.fillStyle = colorHex
+    ctx.shadowBlur = 5
+    ctx.shadowColor = colorHex
+    ctx.fillRect(
+      this.x,
+      this.y,
+      CONSTANTS.BRICK_WIDTH - 2,
+      CONSTANTS.BRICK_HEIGHT - 2
+    )
+    ctx.shadowBlur = 0
+  }
+}
+
+class Game {
+  constructor() {
+    this.lives = 3
+    this.score = 0
+    this.highScore = parseInt(localStorage.getItem('breakout_highscore')) || 0
+    this.level = 1
+    this.active = false
+    this.bricks = []
+
+    // Set canvas size
+    this.resizeCanvas()
+    window.addEventListener('resize', () => this.resizeCanvas())
+
+    // Game Objects
+    this.ball = new Ball(canvas.width / 2, canvas.height - 70, CONSTANTS.BALL_RADIUS, CONSTANTS.BALL_SPEED)
+    this.paddle = new Paddle(canvas.width, canvas.height, CONSTANTS.PADDLE_SPEED)
+
+    // FPS control
+    this.fps = 60
+    this.msPerFrame = 1000 / this.fps
+    this.msPrev = window.performance.now()
+    this.frames = 0
+    this.framesPerSec = this.fps
+    this.msFPSPrev = window.performance.now() + 1000
+
+    this.initEvents()
+  }
+
+  resizeCanvas() {
+    canvas.width = 710 // Maintain fixed width for logic consistency as per original design, or make it dynamic if desired. 
+    // Wait, original had fixed width 710 but dynamic height.
+    // If I want it fully responsive I should calculate width relative to window but that breaks the grid logic unless I scale everything.
+    // I will stick to the original width logic but ensure it centers (handled by CSS) and keep height dynamic.
+
+    // Better yet, let's just update height as original did, but I'll add logic to ensure paddle stays in bounds.
+    canvas.width = 710
+    canvas.height = window.innerHeight - 30
+
+    if (this.paddle) {
+      // Reposition paddle Y
+      this.paddle.y = canvas.height - this.paddle.height - 10
+      // Check X bounds
+      if (this.paddle.x + this.paddle.width > canvas.width) {
+        this.paddle.x = canvas.width - this.paddle.width
+      }
+    }
+
+    if (!this.active && this.ball) {
+      // Reset ball Y
+      this.ball.y = canvas.height - 70
+    }
+  }
+
+  initLevel(levelId) {
+    this.level = levelId
+    this.bricks = []
+    for (let c = 0; c < CONSTANTS.BRICK_COLS; c++) {
+      this.bricks[c] = []
+      for (let r = 0; r < CONSTANTS.BRICK_ROWS; r++) {
+        const brickX = c * (CONSTANTS.BRICK_WIDTH + CONSTANTS.BRICK_GAP) + CONSTANTS.BRICK_OFFSET_LEFT
+        const brickY = r * (CONSTANTS.BRICK_HEIGHT + CONSTANTS.BRICK_GAP) + CONSTANTS.BRICK_OFFSET_TOP
+        const color = this.getBrickColor(r, c)
+        this.bricks[c][r] = new Brick(brickX, brickY, color)
       }
     }
   }
-}
 
-function ballMovement() {
-  // rebotar las pelotas en los laterales
-  if (
-    x + dx > canvas.width - radioPelota || // la pared derecha
-    x + dx < radioPelota // la pared izquierda
-  ) {
-    dx = -dx
-  }
+  getBrickColor(r, c) {
+    let color = 1
+    const level = String(this.level)
 
-  // rebotar en la parte de arriba
-  if (y + dy < radioPelota) {
-    dy = -dy
-  }
-
-  // la pelota toca la pala
-  const isBallSameXAsraqueta =
-    x > raquetaX &&
-    x < raquetaX + anchoRaqueta
-
-  const isBallTouchingraqueta =
-    y + dy > raquetaY
-
-  if (isBallSameXAsraqueta && isBallTouchingraqueta) {
-    dy = -dy // cambiamos la dirección de la pelota
-  } else if ( // la pelota toca el suelo
-    y + dy > canvas.height - radioPelota || y + dy > raquetaY + alturaRaqueta
-  ) {
-    if (vidas > 1) {
-      vidas--
-      x = canvas.width / 2
-      y = canvas.height - 70
-      raquetaX = (canvas.width - anchoRaqueta) / 2
-      raquetaY = canvas.height - alturaRaqueta - 10
-    } else {
-      vidas--
-      document.location.reload()
-    }
-  }
-
-  // mover la pelota
-  x += dx
-  y += dy
-}
-
-function raquetaMovement() {
-  if (derechoPresionado && raquetaX < canvas.width - anchoRaqueta) {
-    raquetaX += velocidadRaqueta
-  } else if (izquierdoPresionado && raquetaX > 0) {
-    raquetaX -= velocidadRaqueta
-  }
-}
-
-function cleanCanvas() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
-}
-
-function initEvents() {
-  document.addEventListener('keydown', keyDownHandler)
-  document.addEventListener('keyup', keyUpHandler)
-
-  function keyDownHandler(event) {
-    const { key } = event
-    if (key === 'Right' || key === 'ArrowRight' || key.toLowerCase() === 'd') {
-      derechoPresionado = true
-    } else if (key === 'Left' || key === 'ArrowLeft' || key.toLowerCase() === 'a') {
-      izquierdoPresionado = true
-    }
-  }
-
-  function keyUpHandler(event) {
-    const { key } = event
-    if (key === 'Right' || key === 'ArrowRight' || key.toLowerCase() === 'd') {
-      derechoPresionado = false
-    } else if (key === 'Left' || key === 'ArrowLeft' || key.toLowerCase() === 'a') {
-      izquierdoPresionado = false
-    }
-  }
-}
-
-// Velocidad de fps que queremos que renderice el juego
-const fps = 60
-
-let msPrev = window.performance.now()
-let msFPSPrev = window.performance.now() + 1000
-const msPerFrame = 1000 / fps
-let frames = 0
-let framesPerSec = fps
-
-function draw() {
-  window.requestAnimationFrame(draw)
-
-  const msNow = window.performance.now()
-  const msPassed = msNow - msPrev
-
-  if (msPassed < msPerFrame) return
-
-  const excessTime = msPassed % msPerFrame
-  msPrev = msNow - excessTime
-
-  frames++
-
-  if (msFPSPrev < msNow) {
-    msFPSPrev = window.performance.now() + 1000
-    framesPerSec = frames
-    frames = 0
-  }
-
-  // ... render code
-  cleanCanvas()
-  // hay que dibujar los elementos
-  drawBall()
-  drawraqueta()
-  drawBricks()
-  drawUI()
-
-  // colisiones y movimientos
-  collisionDetection()
-  ballMovement()
-  raquetaMovement()
-}
-
-function colorLadrillo(r, c) {
-  let color = 1
-  switch (nivelElegido) {
-    case '1':
+    if (level === '1') {
       if (r === 0 || r === 8 || c === 6) color = 2
       if (
         (r === 1 && c < 4 && c > 2) ||
@@ -324,6 +215,7 @@ function colorLadrillo(r, c) {
         (r === 6 && c < 4 && c > 1) ||
         (r === 7 && c < 4 && c > 2)
       ) color = 3
+
       if (
         (r === 1 && c > 8 && c < 10) ||
         (r === 2 && c > 8 && c < 11) ||
@@ -333,9 +225,7 @@ function colorLadrillo(r, c) {
         (r === 6 && c > 8 && c < 11) ||
         (r === 7 && c > 8 && c < 10)
       ) color = 4
-      break
-
-    case '2':
+    } else if (level === '2') {
       if (
         ((c === 1 || c === 11) && r < 6) ||
         (c === 6 && r > 2) ||
@@ -368,9 +258,7 @@ function colorLadrillo(r, c) {
         (c === 4 && r > 2 && r < 7) ||
         (c === 5 && r > 3 && r < 8)
       ) color = 5
-      break
-
-    case '3':
+    } else if (level === '3') {
       if (
         c === 6 ||
         (r === 0 && (c < 2 || c > 10)) ||
@@ -396,31 +284,227 @@ function colorLadrillo(r, c) {
         (r === 7 && ((c > 1 && c < 4) || (c > 8 && c < 11))) ||
         (r === 6 && ((c > 3 && c < 6) || (c > 6 && c < 9)))
       ) color = 6
-      break
+    }
+
+    return color
   }
-  return color
+
+  start() {
+    this.active = true
+    this.score = 0
+    this.lives = 3
+
+    // Get values from UI
+    const radioVal = document.getElementById('radioPelota').valueAsNumber
+    const velocidadVal = document.getElementById('velocidadRaqueta').valueAsNumber
+
+    this.ball.radius = radioVal
+    this.ball.reset(canvas.width, canvas.height)
+
+    this.paddle.speed = velocidadVal
+    this.paddle.reset(canvas.width, canvas.height)
+
+    document.getElementById('paginaInicio').classList.add('oculto')
+
+    // Start Loop
+    this.loop()
+  }
+
+  gameOver() {
+    this.active = false
+    document.getElementById('paginaInicio').classList.remove('oculto')
+    if (this.score > this.highScore) {
+      this.highScore = this.score
+      localStorage.setItem('breakout_highscore', this.highScore)
+    }
+  }
+
+  collisionDetection() {
+    for (let c = 0; c < CONSTANTS.BRICK_COLS; c++) {
+      for (let r = 0; r < CONSTANTS.BRICK_ROWS; r++) {
+        const b = this.bricks[c][r]
+        if (b.status === CONSTANTS.STATE.DESTROYED) continue
+
+        const isBallSameXAsBrick =
+          this.ball.x > b.x &&
+          this.ball.x < b.x + CONSTANTS.BRICK_WIDTH
+
+        const isBallSameYAsBrick =
+          this.ball.y > b.y &&
+          this.ball.y < b.y + CONSTANTS.BRICK_HEIGHT
+
+        if (isBallSameXAsBrick && isBallSameYAsBrick) {
+          this.ball.dy = -this.ball.dy
+          b.status = CONSTANTS.STATE.DESTROYED
+          this.score += 10
+        }
+      }
+    }
+  }
+
+  ballMovement() {
+    // Wall collisions
+    if (
+      this.ball.x + this.ball.dx > canvas.width - this.ball.radius ||
+      this.ball.x + this.ball.dx < this.ball.radius
+    ) {
+      this.ball.dx = -this.ball.dx
+    }
+
+    // Shield (Top) collision
+    if (this.ball.y + this.ball.dy < this.ball.radius) {
+      this.ball.dy = -this.ball.dy
+    }
+
+    // Paddle collision
+    const isBallSameXAsPaddle =
+      this.ball.x > this.paddle.x &&
+      this.ball.x < this.paddle.x + this.paddle.width
+
+    const isBallTouchingPaddle =
+      this.ball.y + this.ball.dy > this.paddle.y
+
+    if (isBallSameXAsPaddle && isBallTouchingPaddle) {
+      this.ball.dy = -this.ball.dy
+    } else if (
+      this.ball.y + this.ball.dy > canvas.height - this.ball.radius ||
+      this.ball.y + this.ball.dy > this.paddle.y + this.paddle.height
+    ) {
+      // Game Over state for life loss
+      this.lives--
+      if (this.lives === 0) {
+        this.gameOver()
+      } else {
+        this.ball.reset(canvas.width, canvas.height)
+        this.paddle.reset(canvas.width, canvas.height)
+      }
+    }
+
+    this.ball.move()
+  }
+
+  drawUI() {
+    ctx.font = '10px Verdana'
+    ctx.fillStyle = CONSTANTS.COLORS.WHITE
+
+    // FPS
+    ctx.fillText(`FPS: ${this.framesPerSec}`, 5, 10)
+
+    // Score
+    ctx.font = '20px Verdana'
+    ctx.fillText(`Score: ${this.score}`, 5, canvas.height - 20)
+    ctx.font = '10px Verdana' // Reset
+
+    // High Score
+    ctx.fillText(`High Score: ${this.highScore}`, canvas.width - 150, 10)
+
+    // Lives
+    for (let i = 0; i < this.lives; i++) {
+      ctx.fillStyle = CONSTANTS.COLORS.MAGENTA
+      ctx.beginPath()
+      ctx.arc(320 + 40 * i, 15, 10, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.closePath()
+    }
+  }
+
+  cleanCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  loop() {
+    if (!this.active) return
+
+    window.requestAnimationFrame(() => this.loop())
+
+    const msNow = window.performance.now()
+    const msPassed = msNow - this.msPrev
+
+    if (msPassed < this.msPerFrame) return
+
+    const excessTime = msPassed % this.msPerFrame
+    this.msPrev = msNow - excessTime
+
+    this.frames++
+
+    if (this.msFPSPrev < msNow) {
+      this.msFPSPrev = window.performance.now() + 1000
+      this.framesPerSec = this.frames
+      this.frames = 0
+    }
+
+    this.cleanCanvas()
+    this.ball.draw()
+    this.paddle.draw()
+
+    for (let c = 0; c < CONSTANTS.BRICK_COLS; c++) {
+      for (let r = 0; r < CONSTANTS.BRICK_ROWS; r++) {
+        this.bricks[c][r].draw()
+      }
+    }
+
+    this.drawUI()
+
+    this.collisionDetection()
+    this.ballMovement()
+    this.paddle.move(canvas.width)
+  }
+
+  initEvents() {
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Right' || e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+        this.paddle.movingRight = true
+      } else if (e.key === 'Left' || e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+        this.paddle.movingLeft = true
+      }
+    })
+
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'Right' || e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+        this.paddle.movingRight = false
+      } else if (e.key === 'Left' || e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+        this.paddle.movingLeft = false
+      }
+    })
+  }
 }
 
-const botonAyuda = document.getElementById('botonAyuda')
-botonAyuda.addEventListener('click', () => {
-  const dialogAyuda = document.getElementById('dialogAyuda')
-  dialogAyuda.showModal()
+// Initialize Game
+const game = new Game()
+
+// UI Interaction
+let botonAnterior = document.getElementsByClassName('active')[0]
+const niveles = document.getElementById('niveles')
+
+niveles.addEventListener('click', (e) => {
+  const esBoton = e.target.nodeName === 'BUTTON'
+  if (!esBoton) return
+
+  e.target.classList.add('active')
+  if (botonAnterior !== null && botonAnterior !== e.target) {
+    botonAnterior.classList.remove('active')
+  }
+  botonAnterior = e.target
 })
 
-const cerrarAyuda = document.getElementById('cerrarAyuda')
-cerrarAyuda.addEventListener('click', () => {
-  const dialogAyuda = document.getElementById('dialogAyuda')
-  dialogAyuda.close()
+const botonJugar = document.getElementById('botonJugar')
+botonJugar.addEventListener('click', () => {
+  const nivelElegido = document.getElementsByClassName('active')[0].id
+  game.initLevel(nivelElegido)
+  game.start()
 })
+
+// Dialogs
+const botonAyuda = document.getElementById('botonAyuda')
+const cerrarAyuda = document.getElementById('cerrarAyuda')
+const dialogAyuda = document.getElementById('dialogAyuda')
+
+botonAyuda.addEventListener('click', () => dialogAyuda.showModal())
+cerrarAyuda.addEventListener('click', () => dialogAyuda.close())
 
 const botonAjustes = document.getElementById('botonAjustes')
-botonAjustes.addEventListener('click', () => {
-  const dialogAjustes = document.getElementById('dialogAjustes')
-  dialogAjustes.showModal()
-})
-
 const cerrarAjustes = document.getElementById('cerrarAjustes')
-cerrarAjustes.addEventListener('click', () => {
-  const dialogAjustes = document.getElementById('dialogAjustes')
-  dialogAjustes.close()
-})
+const dialogAjustes = document.getElementById('dialogAjustes')
+
+botonAjustes.addEventListener('click', () => dialogAjustes.showModal())
+cerrarAjustes.addEventListener('click', () => dialogAjustes.close())
