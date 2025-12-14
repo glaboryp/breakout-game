@@ -1,6 +1,6 @@
 <div align="center">
     <a href="https://breakout-game-one.vercel.app/" target="_blank">
-    <img src="./assets/logo.png" /> 
+    <img src="./assets/logo.webp" /> 
     </a>
   <h3>
     <strong>Clon del juego Breakout de Atari</strong>
