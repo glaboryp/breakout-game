@@ -19,7 +19,9 @@ module.exports = [
     files: ['tests/**', 'playwright.config.js'],
     languageOptions: {
       globals: {
-        game: 'readonly'
+        game: 'readonly',
+        canvas: 'readonly',
+        ctx: 'readonly'
       }
     }
   }
