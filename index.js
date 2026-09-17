@@ -1,8 +1,6 @@
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
 
-const $sprite = document.querySelector('#sprite')
-
 const CONSTANTS = {
   PADDLE_WIDTH: 91,
   PADDLE_HEIGHT: 31,
@@ -32,7 +30,7 @@ const CONSTANTS = {
 }
 
 class Ball {
-  constructor(x, y, radius, speed) {
+  constructor (x, y, radius, speed) {
     this.x = x
     this.y = y
     this.radius = radius
@@ -41,7 +39,7 @@ class Ball {
     this.dy = -speed
   }
 
-  draw() {
+  draw () {
     ctx.beginPath()
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
     ctx.fillStyle = CONSTANTS.COLORS.WHITE
@@ -49,12 +47,12 @@ class Ball {
     ctx.closePath()
   }
 
-  move() {
+  move () {
     this.x += this.dx
     this.y += this.dy
   }
 
-  reset(width, height) {
+  reset (width, height) {
     this.x = width / 2
     this.y = height - 70
     this.dx = -this.speed
@@ -63,7 +61,7 @@ class Ball {
 }
 
 class Paddle {
-  constructor(canvasWidth, canvasHeight, speed) {
+  constructor (canvasWidth, canvasHeight, speed) {
     this.width = CONSTANTS.PADDLE_WIDTH
     this.height = CONSTANTS.PADDLE_HEIGHT
     this.speed = speed
@@ -73,7 +71,7 @@ class Paddle {
     this.movingLeft = false
   }
 
-  draw() {
+  draw () {
     ctx.fillStyle = CONSTANTS.COLORS.CYAN
     ctx.fillRect(this.x, this.y, this.width, this.height)
 
@@ -84,7 +82,7 @@ class Paddle {
     ctx.shadowBlur = 0
   }
 
-  move(canvasWidth) {
+  move (canvasWidth) {
     if (this.movingRight && this.x < canvasWidth - this.width) {
       this.x += this.speed
     } else if (this.movingLeft && this.x > 0) {
@@ -92,21 +90,21 @@ class Paddle {
     }
   }
 
-  reset(canvasWidth, canvasHeight) {
+  reset (canvasWidth, canvasHeight) {
     this.x = (canvasWidth - this.width) / 2
     this.y = canvasHeight - this.height - 10
   }
 }
 
 class Brick {
-  constructor(x, y, color) {
+  constructor (x, y, color) {
     this.x = x
     this.y = y
     this.status = CONSTANTS.STATE.ACTIVE
     this.color = color
   }
 
-  draw() {
+  draw () {
     if (this.status === CONSTANTS.STATE.DESTROYED) return
 
     let colorHex = CONSTANTS.COLORS.CYAN
@@ -134,7 +132,7 @@ class Brick {
 }
 
 class Game {
-  constructor() {
+  constructor () {
     this.lives = 3
     this.score = 0
     this.highScore = parseInt(localStorage.getItem('breakout_highscore')) || 0
@@ -161,8 +159,8 @@ class Game {
     this.initEvents()
   }
 
-  resizeCanvas() {
-    canvas.width = 710 // Maintain fixed width for logic consistency as per original design, or make it dynamic if desired. 
+  resizeCanvas () {
+    canvas.width = 710 // Maintain fixed width for logic consistency as per original design, or make it dynamic if desired.
     // Wait, original had fixed width 710 but dynamic height.
     // If I want it fully responsive I should calculate width relative to window but that breaks the grid logic unless I scale everything.
     // I will stick to the original width logic but ensure it centers (handled by CSS) and keep height dynamic.
@@ -186,7 +184,7 @@ class Game {
     }
   }
 
-  initLevel(levelId) {
+  initLevel (levelId) {
     this.level = levelId
     this.bricks = []
     for (let c = 0; c < CONSTANTS.BRICK_COLS; c++) {
@@ -200,7 +198,7 @@ class Game {
     }
   }
 
-  getBrickColor(r, c) {
+  getBrickColor (r, c) {
     let color = 1
     const level = String(this.level)
 
@@ -289,7 +287,7 @@ class Game {
     return color
   }
 
-  start() {
+  start () {
     this.active = true
     this.score = 0
     this.lives = 3
@@ -310,7 +308,7 @@ class Game {
     this.loop()
   }
 
-  gameOver() {
+  gameOver () {
     this.active = false
     document.getElementById('paginaInicio').classList.remove('oculto')
     if (this.score > this.highScore) {
@@ -319,7 +317,7 @@ class Game {
     }
   }
 
-  collisionDetection() {
+  collisionDetection () {
     for (let c = 0; c < CONSTANTS.BRICK_COLS; c++) {
       for (let r = 0; r < CONSTANTS.BRICK_ROWS; r++) {
         const b = this.bricks[c][r]
@@ -342,7 +340,7 @@ class Game {
     }
   }
 
-  ballMovement() {
+  ballMovement () {
     // Wall collisions
     if (
       this.ball.x + this.ball.dx > canvas.width - this.ball.radius ||
@@ -383,7 +381,7 @@ class Game {
     this.ball.move()
   }
 
-  drawUI() {
+  drawUI () {
     ctx.font = '10px Verdana'
     ctx.fillStyle = CONSTANTS.COLORS.WHITE
 
@@ -408,11 +406,11 @@ class Game {
     }
   }
 
-  cleanCanvas() {
+  cleanCanvas () {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
   }
 
-  loop() {
+  loop () {
     if (!this.active) return
 
     window.requestAnimationFrame(() => this.loop())
@@ -450,7 +448,7 @@ class Game {
     this.paddle.move(canvas.width)
   }
 
-  initEvents() {
+  initEvents () {
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Right' || e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
         this.paddle.movingRight = true
