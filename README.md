@@ -14,6 +14,7 @@
 <div align="center">
 
 ![JavaScript Badge](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=000&style=flat)
+[![CI](https://github.com/glaboryp/breakout-game/actions/workflows/ci.yml/badge.svg)](https://github.com/glaboryp/breakout-game/actions/workflows/ci.yml)
 
 </div>
 
@@ -27,15 +28,33 @@
 git clone git@github.com:tu_username/breakout-game.git
 ```
 
-3. Instala la extensión [**Live Preview**](https://marketplace.visualstudio.com/items?itemName=ms-vscode.live-server) en Visual Studio Code.
+3. Instala [pnpm](https://pnpm.io/installation) si no lo tienes, y luego las dependencias del proyecto:
 
-4. Presiona `F1` y selecciona `Live Preview: Start Server`.
+```bash
+pnpm install
+```
 
-5. Realiza los cambios y crea una pull request 🚀.
+4. Arranca un servidor local:
+
+```bash
+pnpm dev
+```
+
+5. Antes de hacer commit, comprueba que el linter y los tests pasan:
+
+```bash
+pnpm run lint
+pnpm test
+```
+
+6. Realiza los cambios y crea una pull request 🚀.
 
 ## 🛠️ Stack
 
-- HTML, CSS & Javascript.
+- HTML, CSS & JavaScript.
+- [pnpm](https://pnpm.io/) como gestor de paquetes.
+- [ESLint](https://eslint.org/) + [neostandard](https://github.com/neostandard/neostandard) para el linting.
+- [Playwright](https://playwright.dev/) para los tests end-to-end.
 
 
 ## 👑 Contribuidores
