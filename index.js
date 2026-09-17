@@ -160,26 +160,17 @@ class Game {
   }
 
   resizeCanvas () {
-    canvas.width = 710 // Maintain fixed width for logic consistency as per original design, or make it dynamic if desired.
-    // Wait, original had fixed width 710 but dynamic height.
-    // If I want it fully responsive I should calculate width relative to window but that breaks the grid logic unless I scale everything.
-    // I will stick to the original width logic but ensure it centers (handled by CSS) and keep height dynamic.
-
-    // Better yet, let's just update height as original did, but I'll add logic to ensure paddle stays in bounds.
     canvas.width = 710
     canvas.height = window.innerHeight - 30
 
     if (this.paddle) {
-      // Reposition paddle Y
       this.paddle.y = canvas.height - this.paddle.height - 10
-      // Check X bounds
       if (this.paddle.x + this.paddle.width > canvas.width) {
         this.paddle.x = canvas.width - this.paddle.width
       }
     }
 
     if (!this.active && this.ball) {
-      // Reset ball Y
       this.ball.y = canvas.height - 70
     }
   }
