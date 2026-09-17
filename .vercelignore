@@ -1,0 +1,7 @@
+.github
+.nvmrc
+eslint.config.js
+playwright.config.js
+tests
+test-results
+playwright-report
