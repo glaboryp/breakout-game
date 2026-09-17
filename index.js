@@ -26,8 +26,19 @@ const CONSTANTS = {
   STATE: {
     ACTIVE: 1,
     DESTROYED: 0
-  }
+  },
+  MAX_LEVEL: 3,
+  LEVEL_TRANSITION_MS: 1500
 }
+
+CONSTANTS.BRICK_COLORS = [
+  CONSTANTS.COLORS.CYAN,
+  CONSTANTS.COLORS.MAGENTA,
+  CONSTANTS.COLORS.YELLOW,
+  CONSTANTS.COLORS.VIOLET,
+  CONSTANTS.COLORS.GREEN,
+  CONSTANTS.COLORS.RED
+]
 
 class Ball {
   constructor (x, y, radius, speed) {
@@ -107,16 +118,7 @@ class Brick {
   draw () {
     if (this.status === CONSTANTS.STATE.DESTROYED) return
 
-    let colorHex = CONSTANTS.COLORS.CYAN
-    switch (this.color) {
-      case 1: colorHex = CONSTANTS.COLORS.CYAN; break
-      case 2: colorHex = CONSTANTS.COLORS.MAGENTA; break
-      case 3: colorHex = CONSTANTS.COLORS.YELLOW; break
-      case 4: colorHex = CONSTANTS.COLORS.VIOLET; break
-      case 5: colorHex = CONSTANTS.COLORS.GREEN; break
-      case 6: colorHex = CONSTANTS.COLORS.RED; break
-      default: colorHex = CONSTANTS.COLORS.CYAN
-    }
+    const colorHex = CONSTANTS.BRICK_COLORS[this.color - 1] || CONSTANTS.COLORS.CYAN
 
     ctx.fillStyle = colorHex
     ctx.shadowBlur = 5
@@ -139,6 +141,9 @@ class Game {
     this.level = 1
     this.active = false
     this.bricks = []
+    this.transitioning = false
+    this.transitionMessage = ''
+    this.transitionUntil = 0
 
     // Set canvas size
     this.resizeCanvas()
@@ -170,8 +175,12 @@ class Game {
       }
     }
 
-    if (!this.active && this.ball) {
-      this.ball.y = canvas.height - 70
+    if (this.ball) {
+      if (!this.active) {
+        this.ball.y = canvas.height - 70
+      } else if (this.ball.y > canvas.height - this.ball.radius) {
+        this.ball.y = canvas.height - this.ball.radius
+      }
     }
   }
 
@@ -279,6 +288,8 @@ class Game {
   }
 
   start () {
+    if (this.active) return
+
     this.active = true
     this.score = 0
     this.lives = 3
@@ -301,11 +312,22 @@ class Game {
 
   gameOver () {
     this.active = false
-    document.getElementById('paginaInicio').classList.remove('oculto')
     if (this.score > this.highScore) {
       this.highScore = this.score
       localStorage.setItem('breakout_highscore', this.highScore)
     }
+    document.getElementById('puntuacionGameOver').textContent = this.score
+    document.getElementById('dialogGameOver').showModal()
+  }
+
+  victory () {
+    this.active = false
+    if (this.score > this.highScore) {
+      this.highScore = this.score
+      localStorage.setItem('breakout_highscore', this.highScore)
+    }
+    document.getElementById('puntuacionVictoria').textContent = this.score
+    document.getElementById('dialogVictoria').showModal()
   }
 
   collisionDetection () {
@@ -422,6 +444,13 @@ class Game {
       this.frames = 0
     }
 
+    if (this.transitioning) {
+      this.cleanCanvas()
+      this.drawTransitionMessage()
+      if (msNow >= this.transitionUntil) this.advanceLevel()
+      return
+    }
+
     this.cleanCanvas()
     this.ball.draw()
     this.paddle.draw()
@@ -437,6 +466,37 @@ class Game {
     this.collisionDetection()
     this.ballMovement()
     this.paddle.move(canvas.width)
+    this.checkLevelComplete()
+  }
+
+  drawTransitionMessage () {
+    ctx.font = '30px Verdana'
+    ctx.fillStyle = CONSTANTS.COLORS.WHITE
+    ctx.textAlign = 'center'
+    ctx.fillText(this.transitionMessage, canvas.width / 2, canvas.height / 2)
+    ctx.textAlign = 'left'
+  }
+
+  checkLevelComplete () {
+    const allDestroyed = this.bricks.every(col =>
+      col.every(brick => brick.status === CONSTANTS.STATE.DESTROYED)
+    )
+    if (!allDestroyed) return
+
+    if (Number(this.level) >= CONSTANTS.MAX_LEVEL) {
+      this.victory()
+    } else {
+      this.transitioning = true
+      this.transitionMessage = `Nivel ${this.level} superado`
+      this.transitionUntil = window.performance.now() + CONSTANTS.LEVEL_TRANSITION_MS
+    }
+  }
+
+  advanceLevel () {
+    this.transitioning = false
+    this.initLevel(Number(this.level) + 1)
+    this.ball.reset(canvas.width, canvas.height)
+    this.paddle.reset(canvas.width, canvas.height)
   }
 
   initEvents () {
@@ -497,3 +557,28 @@ const dialogAjustes = document.getElementById('dialogAjustes')
 
 botonAjustes.addEventListener('click', () => dialogAjustes.showModal())
 cerrarAjustes.addEventListener('click', () => dialogAjustes.close())
+
+const dialogVictoria = document.getElementById('dialogVictoria')
+const menuVictoria = document.getElementById('menuVictoria')
+
+menuVictoria.addEventListener('click', () => {
+  dialogVictoria.close()
+  game.cleanCanvas()
+  document.getElementById('paginaInicio').classList.remove('oculto')
+})
+
+const dialogGameOver = document.getElementById('dialogGameOver')
+const reintentarNivel = document.getElementById('reintentarNivel')
+const menuGameOver = document.getElementById('menuGameOver')
+
+reintentarNivel.addEventListener('click', () => {
+  dialogGameOver.close()
+  game.initLevel(game.level)
+  game.start()
+})
+
+menuGameOver.addEventListener('click', () => {
+  dialogGameOver.close()
+  game.cleanCanvas()
+  document.getElementById('paginaInicio').classList.remove('oculto')
+})
