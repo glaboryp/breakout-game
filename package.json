@@ -4,7 +4,9 @@
   "description": "Clon del juego Breakout de Atari",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "playwright test",
+    "dev": "serve .",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "glabory@gmail.com",
@@ -14,7 +16,9 @@
     "node": "^20.19.0 || ^22.13.0 || >=24"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "eslint": "^10.10.0",
-    "neostandard": "0.14.0-next.1"
+    "neostandard": "0.14.0-next.1",
+    "serve": "^14.2.6"
   }
 }

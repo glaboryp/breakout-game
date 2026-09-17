@@ -14,5 +14,13 @@ module.exports = [
       'no-use-before-define': 'warn',
       '@stylistic/spaced-comment': 'warn'
     }
+  },
+  {
+    files: ['tests/**', 'playwright.config.js'],
+    languageOptions: {
+      globals: {
+        game: 'readonly'
+      }
+    }
   }
 ]
